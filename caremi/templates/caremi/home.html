@@ -1,28 +1,66 @@
+<!-- templates/upload_image.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Streamlit in Django</title>
+    <title>Image Upload with Preview</title>
     <style>
-        /* Make sure the body and html fill the entire screen */
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-
-        /* Set the iframe to cover the full screen */
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none; /* Removes border around iframe */
+        .preview {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 300px;
+            max-height: 300px;
+            display: block;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <!-- Embed Streamlit app using an iframe -->
-    <iframe src="http://localhost:8501"></iframe>
+    <h1>Upload an Image</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+
+    <div class="preview">
+        <h2>Live Preview:</h2>
+        <input type="file" id="imageInput" accept="image/*">
+        <img id="imagePreview" src="#" alt="No image selected">
+    </div>
+
+    <hr>
+    <h2>Uploaded Images:</h2>
+    <div>
+        {% for image in images %}
+            <img src="{{ image.image.url }}" alt="Uploaded Image">
+        {% empty %}
+            <p>No images uploaded yet.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+
+        imageInput.addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.src = '#';
+            }
+        });
+    </script>
 </body>
 </html>
-    

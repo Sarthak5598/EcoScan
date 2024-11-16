@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        /* Basic reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Form wrapper styling */
+        .form-wrapper {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        /* Form title */
+        .form-wrapper h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Styling for the form labels and inputs */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-group .helptext {
+            font-size: 12px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        /* Styling for the submit button */
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Styling for error messages */
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        /* Responsive styling */
+        @media (max-width: 500px) {
+            .form-wrapper {
+                width: 90%;
+            }
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .register-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-wrapper">
+        <h1>Register</h1>
+
+        <!-- Form begins -->
+        <form method="POST" action="">
+            {% csrf_token %}
+
+            <!-- Username field -->
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                <input type="text" name="username" id="id_username" required maxlength="150" >
+                <div class="helptext">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</div>
+                {% if form.username.errors %}
+                    <div class="error">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Email field -->
+            <div class="form-group">
+                <label for="id_email">Email address:</label>
+                <input type="email" name="email" id="id_email" required maxlength="254">
+                {% if form.email.errors %}
+                    <div class="error">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Password 1 field -->
+            <div class="form-group">
+                <label for="id_password1">Password:</label>
+                <input type="password" name="password1" id="id_password1" required>
+                <div class="helptext">
+                    <ul>
+                        <li>Your password can’t be too similar to your other personal information.</li>
+                        <li>Your password must contain at least 8 characters.</li>
+                        <li>Your password can’t be a commonly used password.</li>
+                        <li>Your password can’t be entirely numeric.</li>
+                    </ul>
+                </div>
+                {% if form.password1.errors %}
+                    <div class="error">{{ form.password1.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Password 2 field -->
+            <div class="form-group">
+                <label for="id_password2">Password confirmation:</label>
+                <input type="password" name="password2" id="id_password2" required>
+                <div class="helptext">Enter the same password as before, for verification.</div>
+                {% if form.password2.errors %}
+                    <div class="error">{{ form.password2.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Submit button -->
+            <input type="submit" class="submit-btn" value="Register">
+            <p class="register-link">Already Registerd? <a href="/login">Login here</a></p>
+        </form>
+        <!-- Form ends -->
+
+    </div>
+</body>
+</html>
