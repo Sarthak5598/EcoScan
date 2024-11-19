@@ -1,66 +1,102 @@
-<!-- templates/upload_image.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Upload with Preview</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .preview {
-            margin-top: 20px;
-        }
-        img {
-            max-width: 300px;
-            max-height: 300px;
-            display: block;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Upload an Image</h1>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
+{% extends 'caremi/base.html' %}
 
-    <div class="preview">
-        <h2>Live Preview:</h2>
-        <input type="file" id="imageInput" accept="image/*">
-        <img id="imagePreview" src="#" alt="No image selected">
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    {% if user.role == 'client' %}
+        <!-- Important: enctype attribute is required for file uploads -->
+        <form method="POST" action="{% url 'home' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="space-y-4">
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700">Image Title (Optional)</label>
+                    <input type="text" 
+                           name="title" 
+                           id="title" 
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                
+                <div>
+                    <label for="image" class="block text-sm font-medium text-gray-700">Select Image</label>
+                    <input type="file" 
+                           name="image" 
+                           id="image" 
+                           accept="image/*"
+                           required
+                           class="mt-1 block w-full">
+                </div>
+
+                <!-- Image Preview -->
+                <div id="imagePreview" class="hidden mt-4">
+                    <img id="preview" class="max-h-48 rounded-lg">
+                </div>
+
+                <button class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition">
+                    Upload Image
+                </button>
+            </div>
+        </form>
     </div>
 
-    <hr>
-    <h2>Uploaded Images:</h2>
-    <div>
-        {% for image in images %}
-            <img src="{{ image.image.url }}" alt="Uploaded Image">
-        {% empty %}
-            <p>No images uploaded yet.</p>
-        {% endfor %}
+    <!-- User Stats -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h3 class="text-xl font-bold mb-4">Your Activity</h3>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 bg-gray-50 rounded">
+                <p class="text-gray-600">Daily Uploads</p>
+                <p class="text-2xl font-bold">{{ daily_uploads_count }} / 4</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded">
+                <p class="text-gray-600">Total Carbon Emissions</p>
+                <p class="text-2xl font-bold">{{ total_carbon_emission }} kg CO₂</p>
+            </div>
+            <div class="p-4 bg-gray-50 rounded">
+                <p class="text-gray-600">Carbon Emission Estimate from OpenAI</p>
+                <p class="text-2xl font-bold">{{ carbon_emission_response }} kg CO₂</p>
+            </div>
+        </div>
     </div>
+    {% endif %}
 
-    <script>
-        const imageInput = document.getElementById('imageInput');
-        const imagePreview = document.getElementById('imagePreview');
+    <!-- Uploaded Images -->
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold mb-4">Your Uploaded Images</h2>
+        {% if images %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for image in images %}
+                    <div class="border rounded-lg overflow-hidden">
+                        <img src="{{ image.image.url }}" 
+                             alt="{{ image.title|default:'Uploaded image' }}"
+                             class="w-full h-48 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold">{{ image.title|default:'Untitled' }}</h3>
+                            <p class="text-sm text-gray-600">Uploaded: {{ image.uploaded_at|date:"M d, Y" }}</p>
+                            <p class="text-sm text-gray-600">Status: {{ image.status }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-600">No images uploaded yet.</p>
+        {% endif %}
+    </div>
+</div>
 
-        imageInput.addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    imagePreview.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                imagePreview.src = '#';
-            }
-        });
-    </script>
-</body>
-</html>
+<script>
+// Image preview functionality
+document.getElementById('image').addEventListener('change', function(e) {
+    const preview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('preview');
+    
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.classList.remove('hidden');
+        }
+        
+        reader.readAsDataURL(this.files[0]);
+    }
+});
+</script>
+{% endblock %}

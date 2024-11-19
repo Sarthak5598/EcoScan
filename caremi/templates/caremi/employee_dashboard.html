@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, Employee!</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    {% if success %}
+        <p style="color: green;">{{ success }}</p>
+    {% endif %}
+    <h2>Pending Images</h2>
+    <ul>
+        {% for image in pending_images %}
+            <li>
+                Image ID: {{ image.id }} - Status: {{ image.status }}
+                <form method="POST" action="{% url 'home' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="image_id" value="{{ image.id }}">
+                    <button type="submit" name="action" value="approve">Approve</button>
+                    <button type="submit" name="action" value="reject">Reject</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

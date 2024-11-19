@@ -12,6 +12,8 @@ streamlit = "^1.40.1"
 opencv-python = "^4.10.0.84"
 av = "^13.1.0"
 streamlit-camera-input-live = "^0.2.0"
+openai = "^1.54.4"
+python-dotenv = "^1.0.1"
 
 
 [build-system]

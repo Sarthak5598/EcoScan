@@ -124,5 +124,19 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-MEDIA_URL = '/media/'  # Public URL to access media files
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+AUTH_USER_MODEL = 'caremi.User'
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',  # Django server
+    'http://localhost:3000',  # Frontend
+]
+SESSION_COOKIE_SECURE = False
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Now you can use environment variables in your settings
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
