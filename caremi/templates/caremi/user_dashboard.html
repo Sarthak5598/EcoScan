@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+        .image-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .image-list li {
+            padding: 8px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .image-list li span {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .delayed {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header">
+        <h2>Welcome, {{ username }}</h2>
+        <div>Tokens: <strong>{{ tokens }}</strong></div>
+    </div>
+
+    <!-- Dashboard Summary -->
+    <div class="card">
+        <h3>Dashboard Summary</h3>
+        <p><strong>Total Images Uploaded:</strong> {{ total_images }}</p>
+        <p><strong>Total Emission:</strong> {{ total_emission }}</p>
+        <p><strong>Last Uploaded:</strong> {{ last_upload|date:"F j, Y, g a" }}</p>
+    </div>
+
+    <!-- Pending Images Section -->
+    <div class="card">
+        <div class="section-title">Pending Tasks</div>
+        {% if pending_images %}
+            <ul class="image-list">
+                {% for image in pending_images %}
+                    <li>
+                        <span><strong>ID:</strong> {{ image.id }}</span>
+                        <span><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</span>
+                        <span><strong>Emission:</strong> {{ image.emission }}</span>
+                        <span><strong>Time Left:</strong> <span class="time-left" data-upload-time="{{ image.uploaded_at|date:'U' }}"></span></span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No pending tasks</p>
+        {% endif %}
+    </div>
+
+    <!-- Accepted Images Section -->
+    <div class="card">
+        <div class="section-title">Accepted Images</div>
+        {% if accepted_images %}
+            <ul class="image-list">
+                {% for image in accepted_images %}
+                    <li>
+                        <span><strong>ID:</strong> {{ image.id }}</span>
+                        <span><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</span>
+                        <span><strong>Emission:</strong> {{ image.emission }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No accepted images</p>
+        {% endif %}
+    </div>
+
+    <!-- Rejected Images Section -->
+    <div class="card">
+        <div class="section-title">Rejected Images</div>
+        {% if rejected_images %}
+            <ul class="image-list">
+                {% for image in rejected_images %}
+                    <li>
+                        <span><strong>ID:</strong> {{ image.id }}</span>
+                        <span><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</span>
+                        <span><strong>Emission:</strong> {{ image.emission }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No rejected images</p>
+        {% endif %}
+    </div>
+
+    <script>
+        // Function to calculate time left or show "Delayed"
+        function updateTimeLeft() {
+            const timeNow = Math.floor(Date.now() / 1000); // Current time in seconds
+            const timeElements = document.querySelectorAll('.time-left');
+
+            timeElements.forEach(el => {
+                const uploadTime = parseInt(el.getAttribute('data-upload-time'), 10);
+                const timeElapsed = timeNow - uploadTime;
+                const hoursLeft = 24 - Math.floor(timeElapsed / 3600);
+
+                if (hoursLeft > 0) {
+                    el.textContent = `${hoursLeft} hrs`;
+                } else {
+                    el.textContent = 'Delayed';
+                    el.classList.add('delayed');
+                }
+            });
+        }
+
+        // Update time left on page load
+        document.addEventListener('DOMContentLoaded', updateTimeLeft);
+    </script>
+</body>
+</html>

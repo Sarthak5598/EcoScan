@@ -16,7 +16,7 @@
         {% for image in pending_images %}
             <li>
                 Image ID: {{ image.id }} - Status: {{ image.status }}
-                <form method="POST" action="{% url 'home' %}">
+                <form method="POST">
                     {% csrf_token %}
                     <input type="hidden" name="image_id" value="{{ image.id }}">
                     <button type="submit" name="action" value="approve">Approve</button>
@@ -25,5 +25,44 @@
             </li>
         {% endfor %}
     </ul>
+    <script>
+        document.querySelectorAll('.approve-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const imageId = button.getAttribute('data-id');
+                const action = 'approve';
+                changeStatus(imageId, action);
+            });
+        });
+    
+        document.querySelectorAll('.reject-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const imageId = button.getAttribute('data-id');
+                const action = 'reject';
+                changeStatus(imageId, action);
+            });
+        });
+    
+        function changeStatus(imageId, action) {
+            fetch("{% url 'employee' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}', // Ensure CSRF token is included
+                },
+                body: JSON.stringify({ image_id: imageId, action: action }) // Ensure JSON format
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error); // Show error message if any
+                } else {
+                    location.reload(); // Reload the page to show updated status
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error); // Log any fetch errors
+            });
+        }
+    </script>
 </body>
 </html>

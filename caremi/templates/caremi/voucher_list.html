@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voucher Marketplace</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .voucher-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .voucher-card button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .voucher-card button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Voucher Marketplace</h2>
+        <p>Your Tokens: {{ user_tokens }}</p>
+    </div>
+
+    {% for voucher in vouchers %}
+        <div class="voucher-card">
+            <h3>{{ voucher.name }}</h3>
+            <p>{{ voucher.description }}</p>
+            <p><strong>Cost:</strong> {{ voucher.token_cost }} tokens</p>
+            <form action="{% url 'redeem_voucher' voucher.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" {% if user_tokens < voucher.token_cost %}disabled{% endif %}>
+                    Redeem
+                </button>
+            </form>
+        </div>
+    {% empty %}
+        <p>No vouchers available at the moment.</p>
+    {% endfor %}
+
+    {% if messages %}
+        <div class="error-message">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>

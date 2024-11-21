@@ -35,6 +35,7 @@ class UploadedImage(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to='uploaded_images/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    emission = models.FloatField(default=0.0)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
     def __str__(self):
         return self.title or f"Image {self.id}"
@@ -47,3 +48,25 @@ class UserActivity(models.Model):
 
     def __str__(self):
         return f"Activity for {self.user.username}"
+
+class Tokens(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    token = models.IntegerField(default=0)
+
+class Voucher(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField()
+    token_cost = models.PositiveIntegerField()
+    is_active = models.BooleanField(default=True)  # Only active vouchers are redeemable
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+class UserVoucher(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="redeemed_vouchers")
+    voucher = models.ForeignKey(Voucher, on_delete=models.CASCADE)
+    redeemed_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} redeemed {self.voucher.name}"
