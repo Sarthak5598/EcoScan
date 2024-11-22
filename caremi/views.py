@@ -21,6 +21,8 @@ import openai
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+def home(request):
+    return render(request, 'caremi/newhome.html')
 def login_page(request):
     if request.method == "POST":
         username = request.POST.get('username')
@@ -211,7 +213,7 @@ def voucher_list(request):
         "vouchers": vouchers,
         "user_tokens": user_tokens.token,
     }
-    return render(request, "voucher_list.html", context)
+    return render(request, "caremi/voucher_list.html", context)
 
 @login_required
 def redeem_voucher(request, voucher_id):

@@ -4,56 +4,200 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #1A5F7A;
+            --secondary-color: #159895;
+            --accent-color: #57C5B6;
+            --green-accent: #2ECC71;
+            --background-light: #F8F9FA;
+            --text-color: #2C3E50;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-light);
             margin: 0;
             padding: 20px;
-            color: #333;
+            color: var(--text-color);
         }
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            background-color: #007bff;
+            padding: 20px;
+            background-color: var(--primary-color);
             color: white;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+
+        .header h2 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .tokens {
+            font-weight: bold;
+            font-size: 18px;
+            color: #28a745;
+        }
+
         .card {
             background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
         .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #007bff;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-color);
         }
+
         .image-list {
             list-style-type: none;
             padding: 0;
         }
+
         .image-list li {
-            padding: 8px;
+            padding: 12px;
             background-color: #f9f9f9;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            margin-bottom: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s ease;
         }
+
+        .image-list li:hover {
+            background-color: #e9f7fe;
+        }
+
         .image-list li span {
             display: inline-block;
-            margin-right: 10px;
+            margin-right: 12px;
+            font-size: 14px;
         }
+
         .delayed {
             color: red;
             font-weight: bold;
+        }
+
+        .time-left {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .no-tasks {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+        }
+
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--green-accent);
+        }
+        /* Container for all images in each section */
+        .image-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        /* Card style for each image item */
+        .image-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Hover effect to elevate the card */
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for the image thumbnail */
+        .image-thumbnail {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        /* Image information styling */
+        .image-info {
+            padding: 15px;
+        }
+
+        .image-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* Time left styling */
+        .time-left {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        /* No tasks text styling */
+        .no-tasks {
+            text-align: center;
+            font-size: 16px;
+            color: #999;
+        }
+
+        /* For responsiveness */
+        @media (max-width: 768px) {
+            .image-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 15px;
+            }
+
+            .stats-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -61,12 +205,12 @@
     <!-- Header Section -->
     <div class="header">
         <h2>Welcome, {{ username }}</h2>
-        <div>Tokens: <strong>{{ tokens }}</strong></div>
+        <div class="tokens">Tokens: <strong>{{ tokens }}</strong></div>
     </div>
 
     <!-- Dashboard Summary -->
     <div class="card">
-        <h3>Dashboard Summary</h3>
+        <div class="card-header">Dashboard Summary</div>
         <p><strong>Total Images Uploaded:</strong> {{ total_images }}</p>
         <p><strong>Total Emission:</strong> {{ total_emission }}</p>
         <p><strong>Last Uploaded:</strong> {{ last_upload|date:"F j, Y, g a" }}</p>
@@ -76,55 +220,83 @@
     <div class="card">
         <div class="section-title">Pending Tasks</div>
         {% if pending_images %}
-            <ul class="image-list">
+            <div class="image-container">
                 {% for image in pending_images %}
-                    <li>
-                        <span><strong>ID:</strong> {{ image.id }}</span>
-                        <span><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</span>
-                        <span><strong>Emission:</strong> {{ image.emission }}</span>
-                        <span><strong>Time Left:</strong> <span class="time-left" data-upload-time="{{ image.uploaded_at|date:'U' }}"></span></span>
-                    </li>
+                    <div class="image-card">
+                        <img src="http://127.0.0.1:8000/media/{{image.image}}" alt="Image" class="image-thumbnail">
+                        <div class="image-info">
+                            <p><strong>ID:</strong> {{ image.id }}</p>
+                            <p><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</p>
+                            <p><strong>Emission:</strong> {{ image.emission }}</p>
+                            <p><strong>Time Left:</strong> <span class="time-left" data-upload-time="{{ image.uploaded_at|date:'U' }}"></span></p>
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
-            <p>No pending tasks</p>
+            <p class="no-tasks">No pending tasks</p>
         {% endif %}
     </div>
 
-    <!-- Accepted Images Section -->
     <div class="card">
-        <div class="section-title">Accepted Images</div>
-        {% if accepted_images %}
-            <ul class="image-list">
+        <div class="section-title">Accepted Tasks</div>
+        {% if pending_images %}
+            <div class="image-container">
                 {% for image in accepted_images %}
-                    <li>
-                        <span><strong>ID:</strong> {{ image.id }}</span>
-                        <span><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</span>
-                        <span><strong>Emission:</strong> {{ image.emission }}</span>
-                    </li>
+                    <div class="image-card">
+                        <img src="http://127.0.0.1:8000/media/{{image.image}}" alt="Image" class="image-thumbnail">
+                        <div class="image-info">
+                            <p><strong>ID:</strong> {{ image.id }}</p>
+                            <p><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</p>
+                            <p><strong>Emission:</strong> {{ image.emission }}</p>
+                            <p><strong>Time Left:</strong> <span class="time-left" data-upload-time="{{ image.uploaded_at|date:'U' }}"></span></p>
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
-            <p>No accepted images</p>
+            <p class="no-tasks">No accepted images</p>
         {% endif %}
     </div>
-
-    <!-- Rejected Images Section -->
+    
+    
     <div class="card">
-        <div class="section-title">Rejected Images</div>
-        {% if rejected_images %}
-            <ul class="image-list">
+        <div class="section-title">Rejected Tasks</div>
+        {% if pending_images %}
+            <div class="image-container">
                 {% for image in rejected_images %}
-                    <li>
-                        <span><strong>ID:</strong> {{ image.id }}</span>
-                        <span><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</span>
-                        <span><strong>Emission:</strong> {{ image.emission }}</span>
-                    </li>
+                    <div class="image-card">
+                        <img src="http://127.0.0.1:8000/media/{{image.image}}" alt="Image" class="image-thumbnail">
+                        <div class="image-info">
+                            <p><strong>ID:</strong> {{ image.id }}</p>
+                            <p><strong>Uploaded At:</strong> {{ image.uploaded_at|date:"F j, Y, g a" }}</p>
+                            <p><strong>Emission:</strong> {{ image.emission }}</p>
+                            <p><strong>Time Left:</strong> <span class="time-left" data-upload-time="{{ image.uploaded_at|date:'U' }}"></span></p>
+                        </div>
+                    </div>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
-            <p>No rejected images</p>
+            <p class="no-tasks">No rejected images</p>
         {% endif %}
+    </div>
+    
+    
+    <!-- Actions Section -->
+    <div class="card">
+        <h3 class="section-title">Your Recent Activity</h3>
+        <div class="action-buttons">
+            <a href="#" class="btn">View More</a>
+            <a href="#" class="btn">Donate More</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 class="section-title">Upcoming Goals</h3>
+        <p>We have set some new environmental goals for you to reach. Start contributing to make a bigger impact!</p>
+        <div class="action-buttons">
+            <a href="#" class="btn">See Goals</a>
+        </div>
     </div>
 
     <script>
@@ -136,19 +308,22 @@
             timeElements.forEach(el => {
                 const uploadTime = parseInt(el.getAttribute('data-upload-time'), 10);
                 const timeElapsed = timeNow - uploadTime;
-                const hoursLeft = 24 - Math.floor(timeElapsed / 3600);
 
-                if (hoursLeft > 0) {
-                    el.textContent = `${hoursLeft} hrs`;
+                if (timeElapsed > 86400) { // More than 24 hours
+                    el.innerHTML = '<span class="delayed">Delayed</span>';
                 } else {
-                    el.textContent = 'Delayed';
-                    el.classList.add('delayed');
+                    const remainingTime = 86400 - timeElapsed; // Time left in seconds
+                    const hours = Math.floor(remainingTime / 3600);
+                    const minutes = Math.floor((remainingTime % 3600) / 60);
+                    const seconds = remainingTime % 60;
+                    el.innerHTML = `${hours}h ${minutes}m ${seconds}s`;
                 }
             });
         }
 
         // Update time left on page load
-        document.addEventListener('DOMContentLoaded', updateTimeLeft);
+        window.onload = updateTimeLeft;
+        setInterval(updateTimeLeft, 1000); // Update every second
     </script>
 </body>
 </html>
