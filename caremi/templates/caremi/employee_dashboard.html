@@ -47,20 +47,20 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}', // Ensure CSRF token is included
+                    'X-CSRFToken': '{{ csrf_token }}',
                 },
-                body: JSON.stringify({ image_id: imageId, action: action }) // Ensure JSON format
+                body: JSON.stringify({ image_id: imageId, action: action })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    alert(data.error); // Show error message if any
+                    alert(data.error);
                 } else {
-                    location.reload(); // Reload the page to show updated status
+                    location.reload();
                 }
             })
             .catch((error) => {
-                console.error('Error:', error); // Log any fetch errors
+                console.error('Error:', error);
             });
         }
     </script>

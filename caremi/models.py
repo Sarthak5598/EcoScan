@@ -47,7 +47,7 @@ class UserActivity(models.Model):
     last_activity = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"Activity for {self.user.username}"
+        return f"Activity for {self.user.username} {self.total_carbon_emission}"
 
 class Tokens(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -56,6 +56,7 @@ class Tokens(models.Model):
 class Voucher(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField()
+    code = models.CharField(default="GOGREEN",max_length=10)
     token_cost = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)  # Only active vouchers are redeemable
     created_at = models.DateTimeField(auto_now_add=True)

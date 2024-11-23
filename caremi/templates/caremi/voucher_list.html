@@ -1,3 +1,6 @@
+{% extends 'caremi/base.html' %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,33 +8,129 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voucher Marketplace</title>
     <style>
+        /* General styles */
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
         }
         .header {
-            margin-bottom: 20px;
-        }
-        .voucher-card {
-            border: 1px solid #ccc;
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
             border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
         }
+        .header h2 {
+            margin: 0;
+        }
+
+        /* Voucher card styles */
+        .voucher-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .voucher-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .voucher-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
         .voucher-card button {
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
+            padding: 10px 20px;
+            border-radius: 20px;
             cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .voucher-card button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
         }
         .voucher-card button:disabled {
             background-color: #ccc;
             cursor: not-allowed;
         }
-        .error-message {
-            color: red;
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 10px;
+        }
+
+        .modal-content p {
+            margin: 10px 0;
+        }
+
+        .modal-content button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal-content button:hover {
+            background-color: #45a049;
+        }
+
+        .close-modal {
+            margin-top: 10px;
+            background-color: #d32f2f;
+        }
+
+        .close-modal:hover {
+            background-color: #b71c1c;
+        }
+
+        /* Responsive layout */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 15px;
+            }
+            .voucher-card {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -46,23 +145,48 @@
             <h3>{{ voucher.name }}</h3>
             <p>{{ voucher.description }}</p>
             <p><strong>Cost:</strong> {{ voucher.token_cost }} tokens</p>
-            <form action="{% url 'redeem_voucher' voucher.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" {% if user_tokens < voucher.token_cost %}disabled{% endif %}>
-                    Redeem
-                </button>
-            </form>
+            <button onclick="redeemVoucher('{{ voucher.code }}', '{{ voucher.description }}')"
+                {% if user_tokens < voucher.token_cost %}disabled{% endif %}>
+                Redeem
+            </button>
         </div>
     {% empty %}
         <p>No vouchers available at the moment.</p>
     {% endfor %}
 
-    {% if messages %}
-        <div class="error-message">
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
+    <!-- Modal for displaying voucher code -->
+    <div id="voucherModal" class="modal">
+        <div class="modal-content">
+            <h3 id="voucherDescription"></h3>
+            <p><strong>Voucher Code:</strong> <span id="voucherCode"></span></p>
+            <button onclick="copyCode()">Copy Code</button>
+            <button class="close-modal" onclick="closeModal()">Close</button>
         </div>
-    {% endif %}
+    </div>
+
+    <script>
+        // Function to display the modal with voucher code and description
+        function redeemVoucher(code, description) {
+            document.getElementById('voucherCode').textContent = code;
+            document.getElementById('voucherDescription').textContent = description;
+            document.getElementById('voucherModal').style.display = 'flex';
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('voucherModal').style.display = 'none';
+        }
+
+        // Function to copy the voucher code to clipboard
+        function copyCode() {
+            const code = document.getElementById('voucherCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Voucher code copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy code.');
+            });
+        }
+    </script>
 </body>
 </html>
+{% endblock %}

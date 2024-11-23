@@ -14,61 +14,127 @@
 
         nav {
             background-color: #1A5F7A;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .ecoscan-navbar {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 1rem;
+            padding: 0.75rem 1.5rem;
+            gap: 2rem;
         }
 
         .ecoscan-logo {
             font-size: 1.75rem;
             font-weight: 700;
             color: white;
-            margin-left: 50px;
-        }
-
-        .ecoscan-auth-links {
-            display: flex;
-            gap: 1.5rem;
-            margin-right: 50px;
-            align-items: center;
-        }
-
-        .ecoscan-auth-links span {
-            font-size: 1.1rem;
-            color: white;
-            font-weight: 500;
-        }
-
-        .ecoscan-auth-links a {
-            color: #ffffff;
             text-decoration: none;
-            font-weight: 600;
+            transition: opacity 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .ecoscan-logo:hover {
+            opacity: 0.9;
+        }
+
+        .nav-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            justify-content: flex-end;
+        }
+
+        .token-badge {
+            background-color: #4CAF50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .token-badge:hover {
+            background-color: #45a049;
+            transform: translateY(-1px);
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
-            background-color: #4CAF50;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            transition: all 0.2s ease;
+            position: relative;
         }
 
-        .ecoscan-auth-links a:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: calc(100% - 2rem);
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .nav-link.active::after {
+            width: calc(100% - 2rem);
         }
 
         .ecoscan-logout {
             color: #F87171;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: rgba(248, 113, 113, 0.1);
         }
 
         .ecoscan-logout:hover {
-            color: #d9534f;
-            text-decoration: underline;
+            color: #ef4444;
+            background-color: rgba(248, 113, 113, 0.2);
+        }
+
+        .welcome-text {
+            color: white;
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            background-color: rgba(255, 255, 255, 0.1);
         }
 
         .ecoscan-main-content {
@@ -82,25 +148,73 @@
             padding: 1rem 0;
             text-align: center;
             color: #4A5568;
+            margin-top: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .ecoscan-navbar {
+                grid-template-columns: auto auto;
+                gap: 1rem;
+            }
+
+            .nav-center {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                justify-content: center;
+                padding-top: 0.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-right {
+                gap: 0.75rem;
+            }
+
+            .nav-link {
+                padding: 0.375rem 0.75rem;
+            }
+
+            .welcome-text {
+                display: none;
+            }
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
     <nav>
         <div class="ecoscan-navbar">
-            <a href="{% url 'home' %}" class="ecoscan-logo">EcoScan</a>
-            <div class="ecoscan-auth-links">
+            <a href="{% url 'donate' %}" class="ecoscan-logo">EcoScan</a>
+            
+            <div class="nav-center">
+                <a href="{% url 'dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    Dashboard
+                </a>
+                <a href="{% url 'donate' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    Donate clothes
+                </a>
+                <a href="{% url 'voucher_list' %}" class="nav-link {% if request.resolver_match.url_name == 'voucher_list' %}active{% endif %}">
+                    Redeem Vouchers
+                </a>
+            </div>
+            
+            <div class="nav-right">
+                <span class="token-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {{ user.tokens.token }}
+                </span>
                 {% if user.is_authenticated %}
-                    <span>Welcome, {{ user.username }}</span>
+                    <span class="welcome-text">Welcome, {{ user.username }}</span>
                     <a href="{% url 'logout' %}" class="ecoscan-logout">Logout</a>
                 {% else %}
-                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'login' %}" class="nav-link">Login</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <main class="ecoscan-main-content">
+    <main class="ecoscan-main-content flex-grow">
         {% block content %}
         {% endblock %}
     </main>
