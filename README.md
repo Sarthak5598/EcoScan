@@ -1,7 +1,7 @@
 # ECOSCAN
 
 ## Overview
-ECOSCAN is a Django-based web application aimed at promoting sustainability through voucher redemptions, image processing powered by OpenAI Vision, and fostering eco-friendly collaborations. Hosted on [PythonAnywhere](https://www.pythonanywhere.com/), the platform integrates modern frontend and backend technologies to deliver an engaging user experience.
+ECOSCAN is a Django-based web application aimed at promoting sustainability through voucher redemptions, image processing powered by OpenAI Vision, and fostering eco-friendly collaborations. Hosted on [PythonAnywhere]([(https://rakrsa.pythonanywhere.com]), the platform integrates modern frontend and backend technologies to deliver an engaging user experience.
 
 ---
 
