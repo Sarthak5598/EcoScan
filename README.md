@@ -1,6 +1,6 @@
 Here's the modified README format for **EcoScan** based on the template you provided:
 
-```markdown
+
 # 🌍 EcoScan - Clothing Carbon Footprint Scanner
 
 ## 📜 Overview
@@ -18,28 +18,28 @@ EcoScan is a web application designed to help users understand the environmental
 ### 1. **Clone the Repository**  
    First, clone the repository and navigate into the project directory:
    ```bash
-   git clone https://github.com/your-username/eco-scan-challenge.git
-   cd eco-scan-challenge
+   git clone https://github.com/your-username/EcoScan.git
+   cd EcoScan
    ```
 
 ### 2. **Create and Set Up Virtual Environment using Poetry**  
    Create a virtual environment using Poetry:
    ```bash
    poetry init
-   poetry add django
    poetry install
+   poetry shell
    ```
 
 ### 3. **Migrate the Database**  
    After setting up the virtual environment, run migrations to set up the database:
    ```bash
-   poetry run python manage.py migrate
+   python manage.py migrate
    ```
 
 ### 4. **Run the Application**
    - **Backend**: Start the Django backend server:
      ```bash
-     poetry run python manage.py runserver
+     python manage.py runserver
      ```
    - **Frontend**: As the frontend is served using Django templates with Bootstrap, the UI is automatically rendered by the backend.
 
@@ -60,21 +60,29 @@ OPENAI VISION API CALCULATES THE DATA
 ## 🌟 Product & Technical Enhancements
 
 In this section, suggest possible improvements that could make **EcoScan** a more effective and scalable solution.
+## Future Improvements
 
-1. **Scaling the Backend**:  
-   Scale the backend for larger user loads by using techniques like database indexing, caching, and load balancing to ensure high performance during traffic spikes.
+1. **OpenAI Model Training**:
+   - Train an OpenAI model for more consistent and reliable responses.
 
-2. **Enhanced Carbon Scoring Model**:  
-   Improve the accuracy of carbon scoring by incorporating additional data such as fabric types, production location, and garment wear and tear.
+2. **Employee-Side Features**:
+   - Expand functionality to improve the employee experience and manage tasks efficiently.
 
-3. **User Experience Enhancements**:  
-   - Provide users with a personalized sustainability dashboard.
-   - Add more eco-related features such as rewards for donations or carbon offsetting.
-   - Implement gamification features, allowing users to track their sustainability progress.
+3. **Collaboration with Ecoscan and Reewild**:
+   - Integrate food discounts based on the number of clothes donated.
+   - Enable single delivery for donations and food services to streamline processes.
 
-4. **API Integrations**:  
-   Integrate with external APIs for real-time data on carbon emissions, clothing industry statistics, or carbon offset programs to make the tool even more accurate and relevant.
+4. **Backend Scalability**:
+   - Scale the backend to handle larger user loads efficiently. This could involve optimizing database queries, using caching mechanisms, and considering distributed systems or cloud hosting solutions.
 
+5. **Enhanced Carbon Scoring Model**:
+   - Improve the carbon scoring model by incorporating more detailed data, such as the carbon footprint of donated items, transportation logistics, and the environmental impact of various donation types.
+
+6. **Improved User Experience**:
+   - Enhance the user experience by providing additional insights, such as sustainability comparisons between different donation actions, personalized recommendations, and progress tracking.
+
+7. **External API Integration**:
+   - Integrate the solution with external APIs to provide real-time data, such as live carbon footprint statistics, donation tracking, or food availability, further enhancing the app's relevance and user engagement.
 ---
 
 ## 📲 Deployment
@@ -86,4 +94,3 @@ EcoScan is deployed and available for access.
 ---
 
 ### Thank you for building a greener future with EcoScan! 🌍💚
-```
