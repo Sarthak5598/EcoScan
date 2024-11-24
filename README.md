@@ -58,17 +58,27 @@ Follow these steps to run the project locally on your machine:
 
 ## Future Improvements
 
-1. **Enhancing OpenAI Integration**:
-   - Train a custom OpenAI model to ensure consistent and precise responses tailored to the platform's requirements.
+1. **OpenAI Model Training**:
+   - Train an OpenAI model for more consistent and reliable responses.
 
-2. **Expanding Employee Functionality**:
-   - Add more tools and features to streamline the employee experience and improve operational efficiency.
+2. **Employee-Side Features**:
+   - Expand functionality to improve the employee experience and manage tasks efficiently.
 
-3. **Collaborations with Reewild**:
-   - **Integration Idea**:
-     - Reewild focuses on food sustainability. By collaborating, ECOSCAN can offer food discounts in exchange for clothes donations.
-   - **Streamlining Deliveries**:
-     - Combine the process of clothes donation and food delivery into a single eco-friendly trip to reduce logistics costs and carbon footprints.
+3. **Collaboration with Ecoscan and Reewild**:
+   - Integrate food discounts based on the number of clothes donated.
+   - Enable single delivery for donations and food services to streamline processes.
+
+4. **Backend Scalability**:
+   - Scale the backend to handle larger user loads efficiently. This could involve optimizing database queries, using caching mechanisms, and considering distributed systems or cloud hosting solutions.
+
+5. **Enhanced Carbon Scoring Model**:
+   - Improve the carbon scoring model by incorporating more detailed data, such as the carbon footprint of donated items, transportation logistics, and the environmental impact of various donation types.
+
+6. **Improved User Experience**:
+   - Enhance the user experience by providing additional insights, such as sustainability comparisons between different donation actions, personalized recommendations, and progress tracking.
+
+7. **External API Integration**:
+   - Integrate the solution with external APIs to provide real-time data, such as live carbon footprint statistics, donation tracking, or food availability, further enhancing the app's relevance and user engagement.
 
 ---
 
