@@ -11,7 +11,6 @@ urlpatterns = [
     path("dashboard/",views.user_dashboard, name='dashboard'),
     path('employee/', views.client_side, name='employee'),
     path('vouchers/', views.voucher_list, name='voucher_list'),
-    path('vouchers/redeem/<int:voucher_id>/', views.redeem_voucher, name='redeem_voucher'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

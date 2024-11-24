@@ -1,4 +1,5 @@
 {% extends 'caremi/base.html' %}
+{% load static %}
 
 {% block content %}
 <!DOCTYPE html>
@@ -8,7 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Voucher Marketplace</title>
     <style>
-        /* General styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
@@ -23,31 +23,41 @@
             padding: 20px;
             text-align: center;
             border-radius: 8px;
+            margin-bottom: 20px;
         }
-        .header h2 {
-            margin: 0;
+        .token-display {
+            font-size: 1.2em;
+            margin-top: 10px;
         }
-
-        /* Voucher card styles */
+        .voucher-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
         .voucher-card {
             background-color: white;
             border-radius: 12px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
-            margin-bottom: 20px;
-            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 250px;
         }
         .voucher-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
         }
-
-        .voucher-card h3 {
-            margin-top: 0;
-            color: #333;
+        .voucher-info {
+            flex-grow: 1;
         }
-
-        .voucher-card button {
+        .voucher-actions {
+            margin-top: 15px;
+        }
+        .btn {
             background-color: #4CAF50;
             color: white;
             border: none;
@@ -55,18 +65,18 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 200px;
         }
-        .voucher-card button:hover {
+        .btn:hover:not(:disabled) {
             background-color: #45a049;
             transform: scale(1.05);
         }
-        .voucher-card button:disabled {
-            background-color: #ccc;
+        .btn:disabled {
+            background-color: #cccccc;
             cursor: not-allowed;
         }
-
-        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -74,62 +84,65 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
         }
-
+        .modal.active {
+            display: flex;
+        }
         .modal-content {
             background-color: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 12px;
             width: 90%;
             max-width: 400px;
             text-align: center;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
         }
-
-        .modal-content h3 {
-            margin-bottom: 10px;
+        .voucher-code {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 1.2em;
+            margin: 15px 0;
         }
-
-        .modal-content p {
+        .alert {
+            padding: 10px 15px;
+            border-radius: 8px;
             margin: 10px 0;
+            display: none;
         }
-
-        .modal-content button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-
-        .modal-content button:hover {
-            background-color: #45a049;
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
-
-        .close-modal {
-            margin-top: 10px;
-            background-color: #d32f2f;
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-
-        .close-modal:hover {
-            background-color: #b71c1c;
-        }
-
-        /* Responsive layout */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
+            .voucher-container {
+                grid-template-columns: 1fr;
             }
-            .header {
-                padding: 15px;
-            }
-            .voucher-card {
-                padding: 15px;
+            .modal-content {
+                width: 95%;
+                margin: 10px;
             }
         }
     </style>
@@ -137,55 +150,149 @@
 <body>
     <div class="header">
         <h2>Voucher Marketplace</h2>
-        <p>Your Tokens: {{ user_tokens }}</p>
+        <div class="token-display" id="tokenDisplay">
+            Your Tokens: <span id="userTokens">{{ user_tokens }}</span>
+        </div>
     </div>
 
-    {% for voucher in vouchers %}
-        <div class="voucher-card">
-            <h3>{{ voucher.name }}</h3>
-            <p>{{ voucher.description }}</p>
-            <p><strong>Cost:</strong> {{ voucher.token_cost }} tokens</p>
-            <button onclick="redeemVoucher('{{ voucher.code }}', '{{ voucher.description }}')"
-                {% if user_tokens < voucher.token_cost %}disabled{% endif %}>
-                Redeem
-            </button>
-        </div>
-    {% empty %}
-        <p>No vouchers available at the moment.</p>
-    {% endfor %}
+    <div id="alert" class="alert"></div>
 
-    <!-- Modal for displaying voucher code -->
+    <div class="voucher-container">
+        {% for voucher in vouchers %}
+            <div class="voucher-card">
+                <div class="voucher-info">
+                    <h3>{{ voucher.name }}</h3>
+                    <p>{{ voucher.description }}</p>
+                    <p><strong>Cost:</strong> {{ voucher.token_cost }} tokens</p>
+                </div>
+                <div class="voucher-actions">
+                    <button 
+                        class="btn redeem-btn" 
+                        data-voucher-id="{{ voucher.id }}"
+                        data-voucher-name="{{ voucher.name }}"
+                        data-voucher-cost="{{ voucher.token_cost }}"
+                        {% if user_tokens < voucher.token_cost %}disabled{% endif %}
+                    >
+                        Redeem
+                    </button>
+                </div>
+            </div>
+        {% empty %}
+            <div class="no-vouchers">
+                <p>No vouchers available at the moment.</p>
+            </div>
+        {% endfor %}
+    </div>
+
     <div id="voucherModal" class="modal">
         <div class="modal-content">
-            <h3 id="voucherDescription"></h3>
-            <p><strong>Voucher Code:</strong> <span id="voucherCode"></span></p>
-            <button onclick="copyCode()">Copy Code</button>
-            <button class="close-modal" onclick="closeModal()">Close</button>
+            <h3 id="modalTitle"></h3>
+            <p id="modalDescription"></p>
+            <div class="voucher-code">
+                <span id="voucherCode"></span>
+            </div>
+            <button class="btn" onclick="copyVoucherCode()">Copy Code</button>
+            <button class="btn" style="background-color: #dc3545; margin-top: 10px;" onclick="closeModal()">Close</button>
         </div>
     </div>
 
     <script>
-        // Function to display the modal with voucher code and description
-        function redeemVoucher(code, description) {
-            document.getElementById('voucherCode').textContent = code;
-            document.getElementById('voucherDescription').textContent = description;
-            document.getElementById('voucherModal').style.display = 'flex';
+        // Get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
 
-        // Function to close the modal
-        function closeModal() {
-            document.getElementById('voucherModal').style.display = 'none';
+        // Show alert message
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
         }
 
-        // Function to copy the voucher code to clipboard
-        function copyCode() {
-            const code = document.getElementById('voucherCode').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                alert('Voucher code copied to clipboard!');
-            }).catch(err => {
-                alert('Failed to copy code.');
+        // Update token display
+        function updateTokenDisplay(newAmount) {
+            document.getElementById('userTokens').textContent = newAmount;
+            // Update redeem buttons based on new token amount
+            document.querySelectorAll('.redeem-btn').forEach(btn => {
+                const cost = parseInt(btn.dataset.voucherCost);
+                btn.disabled = newAmount < cost;
             });
         }
+
+        // Handle voucher redemption
+        document.querySelectorAll('.redeem-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const voucherId = this.dataset.voucherId;
+                const voucherName = this.dataset.voucherName;
+                
+                try {
+                    const response = await fetch('/vouchers/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: JSON.stringify({
+                            voucher_id: voucherId
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        showAlert(data.success, 'success');
+                        updateTokenDisplay(data.new_token_balance);
+                        
+                        // Show modal with voucher code
+                        document.getElementById('modalTitle').textContent = voucherName;
+                        document.getElementById('modalDescription').textContent = 'Your voucher has been redeemed successfully!';
+                        document.getElementById('voucherCode').textContent = data.voucher_code;
+                        document.getElementById('voucherModal').classList.add('active');
+                    } else {
+                        showAlert(data.error, 'error');
+                    }
+                } catch (error) {
+                    showAlert('An error occurred while redeeming the voucher.', 'error');
+                }
+            });
+        });
+
+        // Modal functions
+        function closeModal() {
+            document.getElementById('voucherModal').classList.remove('active');
+        }
+
+        async function copyVoucherCode() {
+            const code = document.getElementById('voucherCode').textContent;
+            try {
+                await navigator.clipboard.writeText(code);
+                showAlert('Voucher code copied to clipboard!', 'success');
+            } catch (err) {
+                showAlert('Failed to copy code. Please copy it manually.', 'error');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('voucherModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 </html>

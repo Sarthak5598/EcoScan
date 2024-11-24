@@ -220,27 +220,50 @@ def user_dashboard(request):
 
 @login_required
 def voucher_list(request):
-    vouchers = Voucher.objects.filter(is_active=True)
-    user_tokens = Tokens.objects.get(user=request.user)
-    context = {
-        "vouchers": vouchers,
-        "user_tokens": user_tokens.token,
-    }
-    return render(request, "caremi/voucher_list.html", context)
+    if request.method == 'GET':
+        vouchers = Voucher.objects.filter(is_active=True)
+        user_tokens = Tokens.objects.get(user=request.user)
+        context = {
+            "vouchers": vouchers,
+            "user_tokens": user_tokens.token,
+        }
+        return render(request, "caremi/voucher_list.html", context)
+    
+    try:
+        data = json.loads(request.body)
+        voucher_id = data.get('voucher_id')
+        
+        if not voucher_id:
+            return JsonResponse({"error": "Voucher ID is required"}, status=400)
 
-@login_required
-def redeem_voucher(request, voucher_id):
-    voucher = get_object_or_404(Voucher, id=voucher_id, is_active=True)
-    user_tokens = Tokens.objects.get(user=request.user)
+        voucher = get_object_or_404(Voucher, id=voucher_id, is_active=True)
+        user_tokens = Tokens.objects.get(user=request.user)
 
-    if user_tokens.token < voucher.token_cost:
-        messages.error(request, "You do not have enough tokens to redeem this voucher.")
-        return redirect("voucher_list")
+        # Check if user already has this voucher
+        if UserVoucher.objects.filter(user=request.user, voucher=voucher).exists():
+            return JsonResponse({
+                "error": "You have already redeemed this voucher"
+            }, status=400)
 
-    user_tokens.token -= voucher.token_cost
-    user_tokens.save()
+        # Check if user has enough tokens
+        if user_tokens.token < voucher.token_cost:
+            return JsonResponse({
+                "error": "You do not have enough tokens to redeem this voucher"
+            }, status=400)
 
-    UserVoucher.objects.create(user=request.user, voucher=voucher)
+        user_tokens.token -= voucher.token_cost
+        user_tokens.save()
 
-    messages.success(request, f"You have successfully redeemed the voucher: {voucher.name}")
-    return redirect("voucher_list")
+        UserVoucher.objects.create(user=request.user, voucher=voucher)
+
+        return JsonResponse({
+            "success": f"Successfully redeemed {voucher.name}",
+            "voucher_code": voucher.code,
+            "new_token_balance": user_tokens.token
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid request format"}, status=400)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
